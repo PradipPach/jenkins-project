@@ -1,7 +1,6 @@
 pipeline {
 agent any
 
-```
 stages {
     stage('Checkout') {
         steps {
@@ -14,14 +13,18 @@ stages {
         steps {
             echo "Setting up Python environment..."
             sh '''
+                echo "Checking Python version..."
                 python3 --version
-                # Try to install pip3 only if missing (without sudo)
+
+                echo "Checking pip installation..."
                 if ! command -v pip3 >/dev/null 2>&1; then
                     echo "pip3 not found. Installing..."
                     apt update -y && apt install -y python3-pip
                 else
                     echo "pip3 already installed."
                 fi
+
+                echo "Verifying pip3 version..."
                 pip3 --version
             '''
         }
@@ -43,6 +46,6 @@ post {
         echo "❌ Pipeline failed. Check logs."
     }
 }
-```
+
 
 }
