@@ -9,23 +9,28 @@ stages {
         }
     }
 
-    stage('Setup Python') {
+    stage('Setup Python (Amazon Linux)') {
         steps {
-            echo "Setting up Python environment..."
+            echo "Setting up Python environment on Amazon Linux..."
             sh '''
                 echo "Checking Python version..."
-                python3 --version
+                if ! command -v python3 >/dev/null 2>&1; then
+                    echo "Python3 not found, installing..."
+                    yum install -y python3
+                else
+                    python3 --version
+                fi
 
                 echo "Checking pip installation..."
                 if ! command -v pip3 >/dev/null 2>&1; then
-                    echo "pip3 not found. Installing..."
-                    apt update -y && apt install -y python3-pip
+                    echo "pip3 not found, installing..."
+                    yum install -y python3-pip
                 else
-                    echo "pip3 already installed."
+                    pip3 --version
                 fi
 
-                echo "Verifying pip3 version..."
-                pip3 --version
+                echo "Upgrading pip..."
+                pip3 install --upgrade pip
             '''
         }
     }
@@ -40,10 +45,10 @@ stages {
 
 post {
     success {
-        echo "✅ Pipeline completed successfully!"
+        echo "✅ Pipeline completed successfully on Amazon Linux!"
     }
     failure {
-        echo "❌ Pipeline failed. Check logs."
+        echo "❌ Pipeline failed. Check logs for details."
     }
 }
 
